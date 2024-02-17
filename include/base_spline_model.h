@@ -5,29 +5,27 @@
 
 #pragma once
 
-#include <vector>
-#include <utility>
+#include "base_model.h"
 
 
 // BaseSplineModel
 //   A `BaseSplineModel` interface for a spline model that can be used to
-//   predict the CDF of a key, given a training data set to learn from.
-template <class T>
-struct BaseSplineModel {
-    // A list of training data representation as <key, eCDF> pairs.
-    typedef std::vector<std::pair<T, double>> TrainingSet;
+//   generate and search the selected key array from training data.
+template <typename Key>
+struct BaseSplineModel : BaseModel<Key> {
+    // Array of keys chosen to construct CDF model.
+    std::vector<Key> key_array;
 
-    // BaseSplineModel(X, Y)
-    //   Class constructor that takes a list of tuples as a training set and
-    //   returns a trained model as specified.
-    BaseSplineModel(TrainingSet& training_set);
+    // BaseSplineModel(training_data)
+    //   Constructs the key array based on the input training data and interval
+    //   R to  select keys. Assumes the training data is given in sorted order
+    //   by key size.
+    BaseSplineModel(
+        typename BaseModel<Key>::TrainingData& training_data, size_t R
+    );
 
-    // predict(key)
-    //   Given an input key, returns the CDF of the key, based on the specified
-    //   model.
-    double predict(T key);
-
-    // search_spline(key)
-    //   Searches for the correct spline to use, given an input key.
-    size_t search_spline(T key);
+    // binary_search(key)
+    //   Iterative binary search used to determine which spline model they input
+    //   key is located at.
+    size_t binary_search(Key key);
 };
