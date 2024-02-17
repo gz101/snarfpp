@@ -3,9 +3,7 @@
  * See LICENSE in the directory root for terms of use.
  */
 
-#include <cassert>
-#include <iostream>
-
+#include "../include/base_test_utils.h"
 #include "../include/base_model.h"
 
 
@@ -49,7 +47,7 @@ void test_multiple_keys() {
 }
 
 
-int run() {
+int run_base_model_tests() {
     test_empty_input();
     test_single_key();
     test_multiple_keys();

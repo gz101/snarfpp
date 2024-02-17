@@ -7,10 +7,7 @@
 
 
 int main() {
-    test_empty_input();
-    test_single_key();
-    test_multiple_keys();
+    run_base_model_tests();
 
-    std::cout << "All BaseModel unit tests passed successfully." << std::endl;
-    return 0;
+    std::cout << "All tests passed :)" << std::endl;
 }
