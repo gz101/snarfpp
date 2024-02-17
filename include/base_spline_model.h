@@ -22,7 +22,28 @@ struct BaseSplineModel : BaseModel<Key> {
     //   by key size.
     BaseSplineModel(
         typename BaseModel<Key>::TrainingData& training_data, size_t R
-    );
+    ) {
+        if (R > training_data.size()) {
+            throw std::runtime_error(
+                "ERROR: `R` value larger than training data size."
+            );
+        }
+
+        // we use N/R models, so every R-th key is sampled
+        size_t curr = 0;
+        while (curr < key_array.size()) {
+            curr += R;
+            key_array.push_back(training_data[curr].first);
+        }
+
+        // add the final key to the chosen key array
+        Key last = training_data.back().first;
+        if (key_array.back() != last) {
+            key_array.push_back(last);
+        }
+
+        // array of models is handled by child class
+    }
 
     // binary_search(key)
     //   Iterative binary search used to determine which spline model they input

@@ -9,31 +9,6 @@
 
 
 template <typename Key>
-BaseSplineModel<Key>::BaseSplineModel(
-    typename BaseModel<Key>::TrainingData& training_data, size_t R
-) {
-    if (beta > training_data.size()) {
-        throw std::runtime_error(
-            "ERROR: `beta` value larger than training data size."
-        );
-    }
-
-    // we use N/R models, so every R-th key is sampled
-    size_t curr = 0;
-    while (curr < key_array.size()) {
-        curr += R;
-        key_array.push_back(training_data[curr].first);
-    }
-
-    // add the final key to the chosen key array
-    Key last = training_data.back().first;
-    if (key_array.back() != last) {
-        key_array.push_back(last);
-    }
-};
-
-
-template <typename Key>
 size_t BaseSplineModel<Key>::binary_search(Key key) {
     size_t left = 0;
     size_t right = key_array.size() - 1;
