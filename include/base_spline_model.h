@@ -6,6 +6,7 @@
 #pragma once
 
 #include "base_model.h"
+#include <cassert>
 
 
 // BaseSplineModel
@@ -16,28 +17,22 @@ struct BaseSplineModel : BaseModel<Key> {
     // Array of keys chosen to construct CDF model.
     std::vector<Key> key_array;
 
-    // BaseSplineModel(training_data)
-    //   Constructs the key array based on the input training data and interval
+    // BaseSplineModel(input_keys, R)
+    //   Constructs the key array based on the input key array and interval
     //   R to  select keys. Assumes the training data is given in sorted order
     //   by key size.
     BaseSplineModel(
-        typename BaseModel<Key>::TrainingData& training_data, size_t R
-    ) {
-        if (R > training_data.size()) {
-            throw std::runtime_error(
-                "ERROR: `R` value larger than training data size."
-            );
-        }
-
+        const std::vector<Key>& input_keys, size_t R
+    ) : BaseModel<Key>(input_keys, R) {
         // we use N/R models, so every R-th key is sampled
         size_t curr = 0;
         while (curr < key_array.size()) {
             curr += R;
-            key_array.push_back(training_data[curr].first);
+            key_array.push_back(this->training_data[curr].first);
         }
 
         // add the final key to the chosen key array
-        Key last = training_data.back().first;
+        Key last = this->training_data.back().first;
         if (key_array.back() != last) {
             key_array.push_back(last);
         }

@@ -3,11 +3,12 @@
  * See LICENSE in the directory root for terms of use.
  */
 
-#include "tests/test_base_model.cc"
+#include "../include/base_test_utils.h"
 
 
 int main() {
-    run_base_model_tests();
+    TestBaseModel().run_base_model_tests();
+    TestBaseSplineModel().run_base_spline_model_tests();
 
     std::cout << "All tests passed :)" << std::endl;
 }

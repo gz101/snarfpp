@@ -24,8 +24,14 @@ struct BaseModel {
     //   Constructs the eCDF model given the entire set of input keys. Includes
     //   building the array of chosen keys and specified model. Assumes the
     //   input keys are in sorted order.
-    BaseModel(const std::vector<Key>& input_keys) {
+    BaseModel(const std::vector<Key>& input_keys, size_t R) {
         size_t size = input_keys.size();
+
+        if (R > size) {
+            throw std::runtime_error(
+                "ERROR: `R` value larger than training data size."
+            );
+        }
 
         // construct the eCDF list of keys
         for (size_t i = 0; i < size; ++i) {
