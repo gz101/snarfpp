@@ -5,13 +5,21 @@
 
 #pragma once
 
+#define EPS 0.001
+
 #include <cassert>
 #include <iostream>
 #include <cmath>
 
-#include "base_model.hpp"
-#include "base_spline_model.hpp"
-#include "linear_spline_model.hpp"
+#include "models/base_model.hpp"
+#include "models/base_spline_model.hpp"
+#include "models/linear_spline_model.hpp"
+
+
+// assert_double_equals(x, y)
+//   Asserts that x and y are within EPS of each other to handle floating point
+//   comparisons.
+void assert_double_equals(double x, double y);
 
 
 // TestBaseModel
@@ -28,6 +36,9 @@ struct TestBaseModel {
         double predict(Key key) override {
             return key * 1.0;
         }
+
+        // Simple implementation only for mocking purposes.
+        void print_model() {}
     };
 
     // test_empty_input()
@@ -62,6 +73,9 @@ struct TestBaseSplineModel {
         double predict(Key key) override {
             return key * 1.0;
         }
+
+        // Simple implementation only for mocking purposes.
+        void print_model() {}
     };
 
     // test_constructor_valid_input()
@@ -97,7 +111,16 @@ struct TestLinearSplineModel {
     //   Tests that the predict() function correctly interpolates the CDF model.
     void test_predict();
 
+    // test_paper_model()
+    //   Recreates example from the original SNARF paper for testing.
+    void test_paper_model();
+
     // run_linear_spline_model_tests()
     //   Helper function to run all tests in this struct.
     int run_linear_spline_model_tests();
 };
+
+
+inline void assert_double_equals(double x, double y) {
+    assert(fabs(x - y) < EPS);
+}

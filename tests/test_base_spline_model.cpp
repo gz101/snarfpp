@@ -13,11 +13,11 @@ void TestBaseSplineModel::test_constructor_valid_input() {
 
     assert(model._key_array.size() == 3);
     assert(model._key_array[0].first == 1);
-    assert(model._key_array[0].second == 1.0 / 5);
+    assert_double_equals(model._key_array[0].second, 1.0 / 5);
     assert(model._key_array[1].first == 3);
-    assert(model._key_array[1].second == 3.0 / 5);
+    assert_double_equals(model._key_array[1].second, 3.0 / 5);
     assert(model._key_array[2].first == 5);
-    assert(model._key_array[2].second == 1.0);
+    assert_double_equals(model._key_array[2].second, 1.0);
 }
 
 

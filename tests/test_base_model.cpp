@@ -13,18 +13,22 @@ void TestBaseModel::test_empty_input() {
 
 
 void TestBaseModel::test_single_key() {
-    MockModel<int> model({1}, 0);
+    MockModel<int> model({1}, 1);
     assert(model._training_data.size() == 1);
-    assert(model._training_data[0] == std::make_pair(1, 1.0));
+    assert(model._training_data[0].first == 1);
+    assert_double_equals(model._training_data[0].second, 1.0);
 }
 
 
 void TestBaseModel::test_multiple_keys() {
-    MockModel<int> model({1, 2, 3}, 0);
+    MockModel<int> model({1, 2, 3}, 1);
     assert(model._training_data.size() == 3);
-    assert(model._training_data[0] == std::make_pair(1, 1.0 / 3));
-    assert(model._training_data[1] == std::make_pair(2, 2.0 / 3));
-    assert(model._training_data[2] == std::make_pair(3, 1.0));
+    assert(model._training_data[0].first == 1);
+    assert_double_equals(model._training_data[0].second, 1.0 / 3);
+    assert(model._training_data[1].first == 2);
+    assert_double_equals(model._training_data[1].second, 2.0 / 3);
+    assert(model._training_data[2].first == 3);
+    assert_double_equals(model._training_data[2].second, 1.0);
 }
 
 

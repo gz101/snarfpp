@@ -34,8 +34,8 @@ struct LinearSplineModel : BaseSplineModel<Key> {
         );
 
         // build second model and onwards
-        for (size_t i = 0; i < model_array_size - 1; ++i) {
-            _linear_models_array[i] = _calculate_slope_bias(
+        for (size_t i = 0; i < this->_key_array.size(); ++i) {
+            _linear_models_array[i + 1] = _calculate_slope_bias(
                 this->_key_array[i], this->_key_array[i + 1]
             );
         }
@@ -75,5 +75,30 @@ struct LinearSplineModel : BaseSplineModel<Key> {
         );
         double bias = pair_2.second - slope * pair_2.first;
         return std::make_pair(slope, bias);
+    }
+
+    // print_model()
+    //   Implements a member function to print the linear spline model in human-
+    //   readable format for debugging purposes.
+    void print_model() {
+        std::cout << "--------------------\n";
+        std::cout << "KEY ARRAY [Key, eCDF]\n";
+        for (
+            auto it = this->_key_array.begin();
+            it != this->_key_array.end();
+            ++it
+        ) {
+            std::cout << "[" << it->first << ", " << it->second << "]";
+        }
+
+        std::cout << "\nLINEAR ARRAY MODEL [Slope, Bias]\n";
+        for (
+            auto it = this->_linear_models_array.begin();
+            it != this->_linear_models_array.end();
+            ++it
+        ) {
+            std::cout << "[" << it->first << ", " << it->second << "]";
+        }
+        std::cout << "\n--------------------\n";
     }
 };

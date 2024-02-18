@@ -56,4 +56,9 @@ struct BaseModel {
     //   Given an input key, returns the CDF of the key, based on the specified
     //   model.
     virtual double predict(Key key) = 0;
+
+    // print_model()
+    //   Prints the model to console in human-readable format. Used mainly for
+    //   debugging purposes.
+    virtual void print_model() = 0;
 };
