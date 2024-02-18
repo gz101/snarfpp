@@ -7,9 +7,11 @@
 
 #include <cassert>
 #include <iostream>
+#include <cmath>
 
 #include "base_model.hpp"
 #include "base_spline_model.hpp"
+#include "linear_spline_model.hpp"
 
 
 // TestBaseModel
@@ -18,7 +20,7 @@ struct TestBaseModel {
     // MockModel
     //   Mocking the `BaseModel` struct for testing.
     template <typename Key>
-    struct MockModel : public BaseModel<Key> {
+    struct MockModel : BaseModel<Key> {
         // Inherit original constructor.
         using BaseModel<Key>::BaseModel;
 
@@ -52,7 +54,7 @@ struct TestBaseSplineModel {
     // MockModel
     //   Mocking the `BaseSplineModel` struct for testing.
     template <typename Key>
-    struct MockBaseSplineModel : public BaseSplineModel<Key> {
+    struct MockBaseSplineModel : BaseSplineModel<Key> {
         // Inherit original constructor.
         using BaseSplineModel<Key>::BaseSplineModel;
 
@@ -74,7 +76,28 @@ struct TestBaseSplineModel {
     //   Test binary_search functionality.
     void test_binary_search();
 
-    // run_base_model_tests()
+    // run_base_spline_model_tests()
     //   Helper function to run all tests in this struct.
     int run_base_spline_model_tests();
+};
+
+
+// TestLinearSplineModel
+//   Container that encapsulates all unit tests for the LinearSplineModel.
+struct TestLinearSplineModel {
+    // test_calculate_slope_and_bias()
+    //   Tests that the slope and bias are correctly calculated.
+    void test_calculate_slope_and_bias();
+
+    // test_constructor()
+    //   Tests that the linear spline array is correctly initialized.
+    void test_constructor();
+
+    // test_predict()
+    //   Tests that the predict() function correctly interpolates the CDF model.
+    void test_predict();
+
+    // run_linear_spline_model_tests()
+    //   Helper function to run all tests in this struct.
+    int run_linear_spline_model_tests();
 };

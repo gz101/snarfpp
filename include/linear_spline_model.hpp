@@ -45,19 +45,35 @@ struct LinearSplineModel : BaseSplineModel<Key> {
     //   Implements the `BaseModel`'s predict() function that takes an input key
     //   and estimates its CDF.
     double predict(Key key) {
-        return 0.0;
+        // Return 0.0 if key is smaller than the smallest value in key set.
+        if (key <= this->_training_data[0].first) {
+            return 0.0;
+        }
+
+        // Return 1.0 if key is larger than the largest value in the key set.
+        if (
+            key >= this->_training_data[this->_training_data.size() - 1].first
+        ) {
+            return 1.0;
+        }
+
+        SlopeBiasPair model = _linear_models_array[
+            this->binary_search(key)
+        ];
+        return model.first * key + model.second;
     }
 
     // _calculate_slope_bias(pair_1, pair_2)
     //   A simple calculation of (y2 - y1) / (x2 - x1) to generate the slope and
     //   c = y2 - m * x1 and returns it as a pair.
     SlopeBiasPair _calculate_slope_bias(
-        BaseModel<Key>::KeyCDFPair pair_1, BaseModel<Key>::KeyCDFPair pair_2
+        typename BaseModel<Key>::KeyCDFPair pair_1,
+        typename BaseModel<Key>::KeyCDFPair pair_2
     ) {
         double slope = (
             (pair_2.second - pair_1.second) / (pair_2.first - pair_1.first)
         );
-        double bias = pair2.second - slope * pair2.first;
+        double bias = pair_2.second - slope * pair_2.first;
         return std::make_pair(slope, bias);
     }
 };
