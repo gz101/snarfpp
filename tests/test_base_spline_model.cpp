@@ -3,7 +3,7 @@
  * See LICENSE in the directory root for terms of use.
  */
 
-#include "../include/base_test_utils.h"
+#include "../include/base_test_utils.hpp"
 
 
 void TestBaseSplineModel::test_constructor_valid_input() {
@@ -33,7 +33,7 @@ void TestBaseSplineModel::test_constructor_large_R() {
 
 
 void TestBaseSplineModel::test_binary_search() {
-    std::vector<int> input_keys = {1, 2, 3, 4, 5};
+    std::vector<int> input_keys = {1, 3, 5};
     MockBaseSplineModel<int> model(input_keys, 1); // R is irrelevant here
 
     assert(model.binary_search(0) == 0); // below range

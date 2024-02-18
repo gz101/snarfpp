@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <utility>
+#include <cmath>
+#include <stdexcept>
 
 
 // BaseModel
@@ -19,13 +21,14 @@ struct BaseModel {
 
     // A list of <key, eCDF> pairs of the input data set.
     TrainingData training_data;
+    size_t size;
 
     // BaseModel(key_set)
     //   Constructs the eCDF model given the entire set of input keys. Includes
     //   building the array of chosen keys and specified model. Assumes the
     //   input keys are in sorted order.
     BaseModel(const std::vector<Key>& input_keys, size_t R) {
-        size_t size = input_keys.size();
+        size = input_keys.size();
 
         if (R > size) {
             throw std::runtime_error(

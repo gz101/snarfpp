@@ -3,7 +3,7 @@
  * See LICENSE in the directory root for terms of use.
  */
 
-#include "../include/base_test_utils.h"
+#include "../include/base_test_utils.hpp"
 
 
 void TestBaseModel::test_empty_input() {

@@ -25,16 +25,16 @@ TEST_BIN := $(BIN_DIR)/test_app
 TARGET := $(BIN_DIR)/my_app
 
 # Automatically list all source files in the SRC_DIR
-SRCS := $(wildcard $(SRC_DIR)/*.cc)
+SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 
 # Generate corresponding object file names in the OBJ_DIR
-OBJS := $(SRCS:$(SRC_DIR)/%.cc=$(OBJ_DIR)/%.o)
+OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 # Automatically list all test source files in the TEST_SRC_DIR
-TEST_SRCS := $(wildcard $(TEST_SRC_DIR)/*.cc)
+TEST_SRCS := $(wildcard $(TEST_SRC_DIR)/*.cpp)
 
 # Generate corresponding test object file names in the TEST_OBJ_DIR
-TEST_OBJS := $(TEST_SRCS:$(TEST_SRC_DIR)/%.cc=$(TEST_OBJ_DIR)/%.o)
+TEST_OBJS := $(TEST_SRCS:$(TEST_SRC_DIR)/%.cpp=$(TEST_OBJ_DIR)/%.o)
 
 # Default rule
 all: $(TARGET)
@@ -44,7 +44,7 @@ $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 # Rule to make object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Test rule
@@ -57,7 +57,7 @@ $(TEST_BIN): $(TEST_OBJS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 # Rule to compile test sources into object files
-$(TEST_OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.cc | $(TEST_OBJ_DIR)
+$(TEST_OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.cpp | $(TEST_OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create binary, object, and test object directories if they don't exist

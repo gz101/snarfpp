@@ -8,8 +8,8 @@
 #include <cassert>
 #include <iostream>
 
-#include "base_model.h"
-#include "base_spline_model.h"
+#include "base_model.hpp"
+#include "base_spline_model.hpp"
 
 
 // TestBaseModel
