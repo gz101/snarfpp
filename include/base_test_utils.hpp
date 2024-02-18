@@ -33,7 +33,7 @@ struct TestBaseModel {
     void test_empty_input();
 
     // test_single_key()
-    //   Tests the `BaseModel` correctly constructs an eCDF with a single input key.
+    //   Tests the `BaseModel` correctly constructs an eCDF with an input key.
     void test_single_key();
 
     // test_multiple_keys()

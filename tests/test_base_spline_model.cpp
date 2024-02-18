@@ -11,21 +11,27 @@ void TestBaseSplineModel::test_constructor_valid_input() {
     size_t R = 2;
     MockBaseSplineModel<int> model(input_keys, R);
 
-    assert(model.key_array.size() == 3);
-    assert(model.key_array[0] == 1);
-    assert(model.key_array[1] == 3);
-    assert(model.key_array[2] == 5);
+    assert(model._key_array.size() == 3);
+    assert(model._key_array[0].first == 1);
+    assert(model._key_array[0].second == 1.0 / 5);
+    assert(model._key_array[1].first == 3);
+    assert(model._key_array[1].second == 3.0 / 5);
+    assert(model._key_array[2].first == 5);
+    assert(model._key_array[2].second == 1.0);
 }
 
 
 void TestBaseSplineModel::test_constructor_large_R() {
     std::vector<int> input_keys = {1, 2};
+
     try {
         size_t R = 3; // larger than training data size
         MockBaseSplineModel<int> model(input_keys, R);
         assert(false); // should not reach this line
+
     } catch (const std::runtime_error& e) {
         // expected path
+
     } catch (...) {
         assert(false); // unexpected exception type
     }

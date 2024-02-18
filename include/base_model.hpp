@@ -16,31 +16,36 @@
 //   predict the CDF of a key, given a training data set to learn from.
 template <typename Key>
 struct BaseModel {
-    // Data representation as <key, eCDF> pairs.
-    typedef std::vector<std::pair<Key, double>> TrainingData;
+    // Data representation as <key, eCDF> pair.
+    typedef std::pair<Key, double> KeyCDFPair;
+    // Collection of <key, eCDF> pairs.
+    typedef std::vector<KeyCDFPair> KeyCDFPairList;
 
     // A list of <key, eCDF> pairs of the input data set.
-    TrainingData training_data;
-    size_t size;
+    KeyCDFPairList _training_data;
+    // The number of input keys.
+    size_t _size;
 
-    // BaseModel(key_set)
+    // BaseModel(input_keys, R)
     //   Constructs the eCDF model given the entire set of input keys. Includes
     //   building the array of chosen keys and specified model. Assumes the
     //   input keys are in sorted order.
     BaseModel(const std::vector<Key>& input_keys, size_t R) {
-        size = input_keys.size();
+        _size = input_keys.size();
 
-        if (R > size) {
+        if (R > _size) {
             throw std::runtime_error(
                 "ERROR: `R` value larger than training data size."
             );
         }
 
+        _training_data.resize(_size);
+
         // construct the eCDF list of keys
-        for (size_t i = 0; i < size; ++i) {
-            training_data.push_back(
-                // eCDF is equi-distant for each key
-                std::make_pair(input_keys[i], i * 1.0 / size)
+        for (size_t i = 0; i < _size; ++i) {
+            // eCDF is equi-distant for each key
+            _training_data[i] = std::make_pair(
+                input_keys[i], (i + 1) * 1.0 / _size
             );
         }
 
