@@ -29,6 +29,28 @@ The project addresses the limitations of the linear spline model in SNARF, propo
 ### How to Use
 Instructions on building the project, generating datasets, and running benchmarks are provided in the corresponding directories. Ensure to follow the setup procedures outlined in `/docs` for compiling the source code.
 
+### Local Development
+
+The project is dockerized, so the following commands will need to be run in order to use it on a local environment.
+
+Build the container:
+
+```sh
+docker build -t snarf .
+```
+
+Run the app with a `make` command:
+
+```sh
+docker run -v $(pwd):/usr/src/snarfpp snarfpp <make_command>
+```
+
+For example, to run tests, use the following command:
+
+```sh
+docker run -v $(pwd):/usr/src/snarfpp snarfpp tests
+```
+
 ### Contributions
 This work contributes to the field of learned index structures by providing insights into the potential benefits of integrating non-linear kernel functions into SNARF, offering a more adaptable and efficient solution for range filtering tasks.
 

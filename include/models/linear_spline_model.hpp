@@ -44,7 +44,7 @@ struct LinearSplineModel : BaseSplineModel<Key> {
     // predict(Key key)
     //   Implements the `BaseModel`'s predict() function that takes an input key
     //   and estimates its CDF.
-    double predict(Key key) {
+    double predict(Key key) override {
         // Return 0.0 if key is smaller than the smallest value in key set.
         if (key <= this->_training_data[0].first) {
             return 0.0;
@@ -80,7 +80,7 @@ struct LinearSplineModel : BaseSplineModel<Key> {
     // print_model()
     //   Implements a member function to print the linear spline model in human-
     //   readable format for debugging purposes.
-    void print_model() {
+    void print_model() override {
         std::cout << "--------------------\n";
         std::cout << "KEY ARRAY [Key, eCDF]\n";
         for (

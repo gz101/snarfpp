@@ -3,8 +3,6 @@
  * See LICENSE in the directory root for terms of use.
  */
 
-#define R 1000
-
 #include <algorithm>
 #include "models/linear_spline_model.hpp"
 #include "bit_array.hpp"
@@ -35,7 +33,8 @@ struct SNARF {
     SNARF(
         const std::vector<Key>& input_keys,
         double bits_per_key,
-        size_t elements_per_block
+        size_t elements_per_block,
+        size_t R
     ) : _model(input_keys, R),
         _total_keys(input_keys.size()),
         _block_size(elements_per_block)
@@ -76,8 +75,11 @@ struct SNARF {
                 cdf * this->_total_keys * this->_golomb_param
             );
             location = std::max(
-                0ULL,
-                std::min(location, this->_total_keys * this->_golomb_param - 1)
+                size_t(0ULL),
+                std::min(
+                    location,
+                    size_t(this->_total_keys * this->_golomb_param - 1)
+                )
             );
 
             locations.push_back(location);
@@ -217,7 +219,7 @@ struct SNARF {
             offset += this->_bit_size;
 
             // Reconstruct value.
-            size_t value = quotient * this->_golomb_param + remainder;
+            Key value = quotient * this->_golomb_param + remainder;
 
             // Check if reconstructed key value falls within query range.
             if (value >= lo && value <= hi) {
