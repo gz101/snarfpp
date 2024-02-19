@@ -121,6 +121,31 @@ struct TestLinearSplineModel {
 };
 
 
+// TestBitArray
+//   Container that encapsulates all unit tests for the BitArray.
+struct TestBitArray {
+    // test_constructor()
+    //   Tests the constructor correctly initializes to the specified size.
+    void test_constructor();
+
+    // test_write_and_read_bits()
+    //   Tests that the write and read operations work correctly together.
+    void test_write_and_read_bits();
+
+    // test_read_bits()
+    //   Tests that the read function correctly returns the right bits.
+    void test_read_bit();
+
+    // test_size_bytes()
+    //   Tests that the correct size in bytes are returned.
+    void test_size_bytes();
+
+    // run_bit_array_tests()
+    //   Helper function to run all tests in this struct.
+    int run_bit_array_tests();
+};
+
+
 inline void assert_double_equals(double x, double y) {
     assert(fabs(x - y) < EPS);
 }

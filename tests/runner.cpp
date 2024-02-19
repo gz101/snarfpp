@@ -7,9 +7,9 @@
 
 
 int main() {
-    TestBaseModel().run_base_model_tests();
-    TestBaseSplineModel().run_base_spline_model_tests();
-    TestLinearSplineModel().run_linear_spline_model_tests();
+    assert(TestBaseModel().run_base_model_tests() == 0);
+    assert(TestBaseSplineModel().run_base_spline_model_tests() == 0);
+    assert(TestLinearSplineModel().run_linear_spline_model_tests() == 0);
 
     std::cout << "All tests passed :)" << std::endl;
 }
