@@ -5,6 +5,7 @@
 
 #define R 1000
 
+#include <algorithm>
 #include "models/linear_spline_model.hpp"
 #include "bit_array.hpp"
 
@@ -35,22 +36,21 @@ struct SNARF {
         const std::vector<Key>& input_keys,
         double bits_per_key,
         size_t elements_per_block
-    ) {
-        this->_total_keys = input_keys.size();
-        this->_block_size = elements_per_block;
+    ) : _model(input_keys, R),
+        _total_keys(input_keys.size()),
+        _block_size(elements_per_block)
+    {
+        // Set parameters for SNARF.
         _set_golomb_parameters(bits_per_key);
         this->_total_blocks = ceil(this->_total_keys * 1.0 / this->_block_size);
         this->_bit_set_array.resize(this->_total_blocks);
-
-        // Initialize predictive model.
-        this->_model = LinearSplineModel<Key>(input_keys, R);
 
         // Determine the locations for each key using predictive model.
         std::vector<size_t> locations;
         _set_locations(input_keys, locations);
 
         // Create Golomb-coded blocks for the determined locations.
-        _create_golomb_coded_blocks(locations);
+        _build_bit_blocks(locations);
     }
 
     // _set_golomb_parameters(bits_per_key)
@@ -75,8 +75,9 @@ struct SNARF {
             size_t location = floor(
                 cdf * this->_total_keys * this->_golomb_param
             );
-            location = max(
-                0ULL, min(location, this->_total_keys * this->_golomb_param - 1)
+            location = std::max(
+                0ULL,
+                std::min(location, this->_total_keys * this->_golomb_param - 1)
             );
 
             locations.push_back(location);

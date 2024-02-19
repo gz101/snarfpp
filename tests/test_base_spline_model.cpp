@@ -8,8 +8,8 @@
 
 void TestBaseSplineModel::test_constructor_valid_input() {
     std::vector<int> input_keys = {1, 2, 3, 4, 5};
-    size_t R = 2;
-    MockBaseSplineModel<int> model(input_keys, R);
+    size_t beta = 2;
+    MockBaseSplineModel<int> model(input_keys, beta);
 
     assert(model._key_array.size() == 3);
     assert(model._key_array[0].first == 1);
@@ -25,8 +25,8 @@ void TestBaseSplineModel::test_constructor_large_R() {
     std::vector<int> input_keys = {1, 2};
 
     try {
-        size_t R = 3; // larger than training data size
-        MockBaseSplineModel<int> model(input_keys, R);
+        size_t beta = 3; // larger than training data size
+        MockBaseSplineModel<int> model(input_keys, beta);
         assert(false); // should not reach this line
 
     } catch (const std::runtime_error& e) {

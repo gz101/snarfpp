@@ -15,6 +15,7 @@
 #include "models/base_spline_model.hpp"
 #include "models/linear_spline_model.hpp"
 #include "bit_array.hpp"
+#include "snarf.hpp"
 
 
 // assert_double_equals(x, y)
@@ -123,8 +124,16 @@ struct TestLinearSplineModel {
 
 
 // TestBitArray
-//   Container that encapsulates all unit tests for the BitArray.
+//   Container that encapsulates all unit tests for the BitArray struct.
 struct TestBitArray {
+    // test_default_constructor()
+    //   Tests the zero-argument default constructor.
+    void test_default_constructor();
+
+    // test_initialize_bit_array()
+    //   Tests correct initialization of the bit array with an input size.
+    void test_initialize_bit_array();
+
     // test_constructor()
     //   Tests the constructor correctly initializes to the specified size.
     void test_constructor();
@@ -144,6 +153,45 @@ struct TestBitArray {
     // run_bit_array_tests()
     //   Helper function to run all tests in this struct.
     int run_bit_array_tests();
+};
+
+
+// TestSNARF
+//   Container that encapsulates all unit tests for the SNARF struct.
+struct TestSNARF {
+    // test_constructor()
+    //   Tests the SNARF constructor to ensure correct initialization of
+    //   internal state.
+    void test_constructor();
+
+    // test_set_golomb_parameters()
+    //   Verifies that the Golomb parameter is correctly set.
+    void test_set_golomb_parameters();
+    
+    // test_set_locations()
+    //   Checks if the locations array is correctly populated.
+    void test_set_locations();
+
+    // test_build_bit_blocks()
+    //   Verifies that blocks are correctly constructed and partitioned.
+    void test_build_bit_blocks();
+
+    // test_create_gcs_block()
+    //   Checks the encoding of a simple batch into a Golomb-coded sequence.
+    void test_create_gcs_block();
+
+    // test_range_query()
+    //   Checks it correctly identifies the presence (or absence) of keys within
+    //   a specified range.
+    void test_range_query();
+
+    // test_query_block()
+    //   Verifies it can identify the presence of a key within a block.
+    void test_query_block();
+
+    // run_snarf_tests()
+    //   Helper function to run all tests in this struct.
+    int run_snarf_tests();
 };
 
 

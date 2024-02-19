@@ -6,6 +6,26 @@
 #include "../include/base_test_utils.hpp"
 
 
+void TestBitArray::test_default_constructor() {
+    BitArray ba = BitArray();  // empty bit array
+    assert(ba._bit_array.size() == 0);
+}
+
+
+void TestBitArray::test_initialize_bit_array() {
+    BitArray ba = BitArray();  // empty bit array
+    assert(ba._bit_array.size() == 0);
+
+    size_t size = 64;
+    ba._initialize_bit_array(size);
+    assert(ba._bit_array.size() == size);
+    // Verify that all bits are initialized to 0.
+    for (size_t i = 0; i < size; ++i) {
+        assert(ba.read_bit(i) == 0);
+    }
+}
+
+
 void TestBitArray::test_constructor() {
     size_t size = 64;
     BitArray ba(size);
@@ -49,6 +69,8 @@ void TestBitArray::test_size_bytes() {
 
 
 int TestBitArray::run_bit_array_tests() {
+    test_default_constructor();
+    test_initialize_bit_array();
     test_constructor();
     test_write_and_read_bits();
     test_read_bit();

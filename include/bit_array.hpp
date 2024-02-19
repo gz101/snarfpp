@@ -15,10 +15,20 @@ struct BitArray {
     // The underlying bit array storage.
     boost::dynamic_bitset<> _bit_array;
 
+    // BitArray()
+    //   Default constructor with zero arguments.
+    BitArray() {}
+
     // BitArray(size)
     //   Constructs the underlying bit array with a size of `size`. It
     //   initializes all bits to 0 to begin with.
     BitArray(size_t size) {
+        _initialize_bit_array(size);
+    }
+
+    // _initialize_bit_array(size)
+    //   Helper method that resizes the bit array for the default constructor.
+    void _initialize_bit_array(size_t size) {
         this->_bit_array.resize(size, 0);
     }
 

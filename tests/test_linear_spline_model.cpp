@@ -25,9 +25,9 @@ void TestLinearSplineModel::test_calculate_slope_and_bias() {
 
 void TestLinearSplineModel::test_constructor() {
     std::vector<int> keys = {1, 2, 3, 4, 8};
-    size_t R = 2;
+    size_t beta = 2;
 
-    LinearSplineModel<int> model(keys, R);
+    LinearSplineModel<int> model(keys, beta);
     size_t expected_key_array_size = ceil(keys.size() * 1.0 / 2) + 1;
 
     // Verify the size of _linear_models_array is correct.
@@ -45,9 +45,9 @@ void TestLinearSplineModel::test_constructor() {
 
 void TestLinearSplineModel::test_predict() {
     std::vector<int> keys = {0, 10};
-    size_t R = 2;   // 1 model only from [0, 10]
+    size_t beta = 2;   // 1 model only from [0, 10]
 
-    LinearSplineModel<int> model(keys, R);
+    LinearSplineModel<int> model(keys, beta);
 
     // Test predictions at various points
     assert_double_equals(model.predict(0), 0.0); // At the start of the range
@@ -62,9 +62,9 @@ void TestLinearSplineModel::test_predict() {
 
 void TestLinearSplineModel::test_paper_model() {
     std::vector<int> keys = {3, 5, 12, 13, 25, 35, 47, 57, 67, 72, 75, 80};
-    size_t R = 3;
+    size_t beta = 3;
 
-    LinearSplineModel<int> model(keys, R);
+    LinearSplineModel<int> model(keys, beta);
 
     // Test predictions at spline points
     assert_double_equals(model.predict(12), 0.25);
