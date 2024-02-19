@@ -26,16 +26,16 @@ struct LinearSplineModel : BaseSplineModel<Key> {
         const std::vector<Key>& input_keys, size_t R
     ) : BaseSplineModel<Key>(input_keys, R) {
         size_t model_array_size = this->_key_array.size() + 1;
-        _linear_models_array.resize(model_array_size);
+        this->_linear_models_array.resize(model_array_size);
 
         // build first linear model
-        _linear_models_array[0] = _calculate_slope_bias(
+        this->_linear_models_array[0] = _calculate_slope_bias(
             std::make_pair(0, 0), this->_key_array[0]
         );
 
         // build second model and onwards
         for (size_t i = 0; i < this->_key_array.size(); ++i) {
-            _linear_models_array[i + 1] = _calculate_slope_bias(
+            this->_linear_models_array[i + 1] = _calculate_slope_bias(
                 this->_key_array[i], this->_key_array[i + 1]
             );
         }

@@ -24,28 +24,28 @@ struct BaseModel {
     // A list of <key, eCDF> pairs of the input data set.
     KeyCDFPairList _training_data;
     // The number of input keys.
-    size_t _size;
+    size_t _input_key_set_size;
 
     // BaseModel(input_keys, R)
     //   Constructs the eCDF model given the entire set of input keys. Includes
     //   building the array of chosen keys and specified model. Assumes the
     //   input keys are in sorted order.
     BaseModel(const std::vector<Key>& input_keys, size_t R) {
-        _size = input_keys.size();
+        this->_input_key_set_size = input_keys.size();
 
-        if (R > _size) {
+        if (R > this->_input_key_set_size) {
             throw std::runtime_error(
                 "ERROR: `R` value larger than training data size."
             );
         }
 
-        _training_data.resize(_size);
+        this->_training_data.resize(this->_input_key_set_size);
 
         // construct the eCDF list of keys
-        for (size_t i = 0; i < _size; ++i) {
+        for (size_t i = 0; i < this->_input_key_set_size; ++i) {
             // eCDF is equi-distant for each key
-            _training_data[i] = std::make_pair(
-                input_keys[i], (i + 1) * 1.0 / _size
+            this->_training_data[i] = std::make_pair(
+                input_keys[i], (i + 1) * 1.0 / this->_input_key_set_size
             );
         }
 

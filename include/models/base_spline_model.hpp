@@ -25,21 +25,25 @@ struct BaseSplineModel : BaseModel<Key> {
     BaseSplineModel(
         const std::vector<Key>& input_keys, size_t R
     ) : BaseModel<Key>(input_keys, R) {
-        size_t key_array_size = ceil(this->_size * 1.0 / R);
+        size_t key_array_size = ceil(this->_input_key_set_size * 1.0 / R);
 
         // we use N/R models, so every R-th key is sampled
-        _key_array.resize(key_array_size);
+        this->_key_array.resize(key_array_size);
         for (size_t i = 0; i < key_array_size; ++i) {
             typename BaseModel<Key>::KeyCDFPair pair = this->_training_data[
-                int(((i + 1) * this->_size * 1.0) / key_array_size) - 1
+                int(
+                    ((i + 1) * this->_input_key_set_size * 1.0) / key_array_size
+                ) - 1
             ];
-            _key_array[i] = std::make_pair(
+            this->_key_array[i] = std::make_pair(
                 std::move(pair.first), std::move(pair.second)
             );
         }
 
         // add the final key to the chosen key array
-        _key_array[key_array_size - 1] = this->_training_data[this->_size - 1];
+        this->_key_array[key_array_size - 1] = this->_training_data[
+            this->_input_key_set_size - 1
+        ];
 
         // array of models is handled by child class
     }
@@ -49,13 +53,13 @@ struct BaseSplineModel : BaseModel<Key> {
     //   key is located at.
     size_t binary_search(Key key) {
         size_t left = 0;
-        size_t right = _key_array.size() - 1;
+        size_t right = this->_key_array.size() - 1;
 
         // binary search until <= 10 elements remain
         while ((right - left) > SEARCH_LIMIT) {
             size_t mid = left + ((right - left) >> 1);
 
-            if (_key_array[mid].first < key) {
+            if (this->_key_array[mid].first < key) {
                 left = mid;
             } else {
                 right = mid;
@@ -65,12 +69,12 @@ struct BaseSplineModel : BaseModel<Key> {
         // linear search final <= 10 elements
         for (size_t i = left; i <= right; ++i) {
             // return first key greater than or equal to the input key
-            if (_key_array[i].first >= key) {
+            if (this->_key_array[i].first >= key) {
                 return i;
             }
         }
 
         // the input key is greater than the last key in the array
-        return _key_array.size() - 1;
+        return this->_key_array.size() - 1;
     }
 };

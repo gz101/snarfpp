@@ -14,6 +14,7 @@
 #include "models/base_model.hpp"
 #include "models/base_spline_model.hpp"
 #include "models/linear_spline_model.hpp"
+#include "bit_array.hpp"
 
 
 // assert_double_equals(x, y)
@@ -34,7 +35,7 @@ struct TestBaseModel {
 
         // Simple implementation only for mocking purposes.
         double predict(Key key) override {
-            return key * 1.0;
+            return key * 0.1 / key;
         }
 
         // Simple implementation only for mocking purposes.
@@ -71,7 +72,7 @@ struct TestBaseSplineModel {
 
         // Simple implementation only for mocking purposes.
         double predict(Key key) override {
-            return key * 1.0;
+            return key * 0.1 / key;
         }
 
         // Simple implementation only for mocking purposes.

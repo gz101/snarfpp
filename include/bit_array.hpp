@@ -19,7 +19,7 @@ struct BitArray {
     //   Constructs the underlying bit array with a size of `size`. It
     //   initializes all bits to 0 to begin with.
     BitArray(size_t size) {
-        _bit_array.resize(size, 0);
+        this->_bit_array.resize(size, 0);
     }
 
     // write_bits(offset, value, num_bits)
@@ -28,7 +28,7 @@ struct BitArray {
     void write_bits(size_t offset, size_t value, size_t num_bits) {
         for (size_t i = 0; i < num_bits; ++i) {
             // Set the value in the bit array to value[i].
-            _bit_array[offset + i] = (value >> i) & 1;
+            this->_bit_array[offset + i] = (value >> i) & 1;
         }
     }
 
@@ -39,7 +39,7 @@ struct BitArray {
         size_t read = 0;
         for (size_t i = 0; i < num_bits; ++i) {
             // Set read[i] to the (offset + i)-th position in the bit array.
-            if (_bit_array[offset + i]) {
+            if (this->_bit_array[offset + i]) {
                 read |= (1ULL << i);
             }
         }
@@ -50,12 +50,13 @@ struct BitArray {
     // read_bit(offset)
     //   Reads a single bit at a specified offset.
     bool read_bit(size_t offset) {
-        return _bit_array[offset];
+        return this->_bit_array.test(offset);
     }
 
     // size_bytes()
     //   Returns the space used by the structure in bytes.
     size_t size_bytes() const {
-        return (_bit_array.size() + 7) / 8;
+        // Rounds up the number of bytes.
+        return (this->_bit_array.size() + 7) / 8;
     }
 };
