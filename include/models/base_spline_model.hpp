@@ -15,9 +15,6 @@
 //   generate and search the selected key array from training data.
 template <typename Key>
 struct BaseSplineModel : BaseModel<Key> {
-    // Array of keys chosen to construct CDF model.
-    typename BaseModel<Key>::KeyCDFPairList _key_array;
-
     // BaseSplineModel(input_keys, R)
     //   Constructs the key array based on the input key array and interval
     //   R to  select keys. Assumes the training data is given in sorted order
@@ -25,26 +22,6 @@ struct BaseSplineModel : BaseModel<Key> {
     BaseSplineModel(
         const std::vector<Key>& input_keys, size_t R
     ) : BaseModel<Key>(input_keys, R) {
-        size_t key_array_size = ceil(this->_input_key_set_size * 1.0 / R);
-
-        // we use N/R models, so every R-th key is sampled
-        this->_key_array.resize(key_array_size);
-        for (size_t i = 0; i < key_array_size; ++i) {
-            typename BaseModel<Key>::KeyCDFPair pair = this->_training_data[
-                int(
-                    ((i + 1) * this->_input_key_set_size * 1.0) / key_array_size
-                ) - 1
-            ];
-            this->_key_array[i] = std::make_pair(
-                std::move(pair.first), std::move(pair.second)
-            );
-        }
-
-        // add the final key to the chosen key array
-        this->_key_array[key_array_size - 1] = this->_training_data[
-            this->_input_key_set_size - 1
-        ];
-
         // array of models is handled by child class
     }
 

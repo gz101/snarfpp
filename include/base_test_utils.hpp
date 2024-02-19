@@ -40,20 +40,45 @@ struct TestBaseModel {
         }
 
         // Simple implementation only for mocking purposes.
-        void print_model() {}
+        size_t size_bytes() override {
+            return 16;
+        }
+
+        // Simple implementation only for mocking purposes.
+        void print_model() override {}
     };
 
-    // test_empty_input()
-    //   Tests the `BaseModel` with no input keys.
-    void test_empty_input();
+    // test_constructor_success_valid_inputs()
+    //   Tests the model initializes correctly with valid inputs.
+    void test_constructor_success_valid_inputs();
 
-    // test_single_key()
-    //   Tests the `BaseModel` correctly constructs an eCDF with an input key.
-    void test_single_key();
+    // test_constructor_failure_large_R()
+    //   Tests that the model correctly throws an error for excessive R.
+    void test_constructor_failure_large_R();
 
-    // test_multiple_keys()
-    //   Tests the `BaseModel` correctly constructs an eCDF with multiple keys.
-    void test_multiple_keys();
+    // test_compute_ecdf_correctness()
+    //   Tests that the eCDF is correctly computed for valid inputs.
+    void test_compute_ecdf_correctness();
+
+    // test_compute_ecdf_with_duplicates()
+    //   Checks the increasing nature of eCDF values given duplicate keys.
+    void test_compute_ecdf_with_duplicates();
+
+    // test_compute_ecdf_boundary_conditions()
+    //   Tests the cases with a single key as input.
+    void test_compute_ecdf_boundary_conditions();
+
+    // test_build_key_array_correct_sampling()
+    //   Verify keys are correctly sampled according to the input R value.
+    void test_build_key_array_correct_sampling();
+
+    // test_build_key_array_varying_R()
+    //   Checks behavior when R = 1 and R = N boundary conditions.
+    void test_build_key_array_varying_R();
+
+    // test_build_key_array_final_key_inclusion()
+    //   Checks that the final key is included in the sampled set.
+    void test_build_key_array_final_key_inclusion();
 
     // run_base_model_tests()
     //   Helper function to run all tests in this struct.
@@ -77,16 +102,13 @@ struct TestBaseSplineModel {
         }
 
         // Simple implementation only for mocking purposes.
-        void print_model() {}
+        size_t size_bytes() override {
+            return 16;
+        }
+
+        // Simple implementation only for mocking purposes.
+        void print_model() override {}
     };
-
-    // test_constructor_valid_input()
-    //   Test the constructor with valid input.
-    void test_constructor_valid_input();
-
-    // test_constructor_large_R()
-    //   Test the constructor with R larger than training data size.
-    void test_constructor_large_R();
 
     // test_binary_search()
     //   Test binary_search functionality.

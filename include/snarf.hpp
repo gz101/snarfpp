@@ -229,4 +229,10 @@ struct SNARF {
 
         return false;   // no key values found within range.
     }
+
+    // size()
+    //   Returns the total size of the SNARF instance.
+    size_t size() {
+        return 16;
+    }
 };
