@@ -135,6 +135,11 @@ struct TestLinearSplineModel {
     //   Tests that the predict() function correctly interpolates the CDF model.
     void test_predict();
 
+    // test_size_bytes()
+    //   Tests that the size_bytes() function correctly calculates the model
+    //   size.
+    void test_size_bytes();
+
     // test_paper_model()
     //   Recreates example from the original SNARF paper for testing.
     void test_paper_model();

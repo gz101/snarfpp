@@ -60,6 +60,26 @@ void TestLinearSplineModel::test_predict() {
 }
 
 
+void TestLinearSplineModel::test_size_bytes() {
+    std::vector<double> keys = {0.1, 0.2, 0.3, 0.4};
+    size_t R = 2;
+    LinearSplineModel<double> model(keys, R);
+
+    // Manually calculate the expected size.
+    size_t expected_size = 0;
+    size_t KeyCDFPair_size = sizeof(double) + sizeof(double);
+    expected_size += KeyCDFPair_size * keys.size();
+    size_t SlopeBiasPair_size = sizeof(double) * 2;
+    expected_size += SlopeBiasPair_size * (keys.size() + 1);
+
+    // Obtain the actual size from the model.
+    size_t actual_size = model.size_bytes();
+
+    // Assert that the actual size matches the expected size.
+    assert(actual_size == expected_size);
+}
+
+
 void TestLinearSplineModel::test_paper_model() {
     std::vector<int> keys = {3, 5, 12, 13, 25, 35, 47, 57, 67, 72, 75, 80};
     size_t beta = 3;
