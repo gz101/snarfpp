@@ -14,7 +14,7 @@ int main() {
     // GENERATING DATA
     //----------------------------------------
 
-    const std::uint64_t N = 10'000'000;
+    const std::uint64_t N = 10000000;
     std::vector<std::uint64_t> v_keys(N);
     for (std::uint64_t i = 0; i < N; ++i) {
         v_keys[i] = i * 10000;
@@ -32,7 +32,7 @@ int main() {
         v_keys, bits_per_key, batch_size, R
     );
 
-    size_t snarf_size = snarf_instance.size();
+    size_t snarf_size = snarf_instance.size_bytes();
     std::cout << "Bits per key used: " << snarf_size * 8.0 / v_keys.size()
         << std::endl;
 

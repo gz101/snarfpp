@@ -191,30 +191,20 @@ struct TestSNARF {
     //   internal state.
     void test_constructor();
 
-    // test_set_golomb_parameters()
-    //   Verifies that the Golomb parameter is correctly set.
-    void test_set_golomb_parameters();
-    
-    // test_set_locations()
-    //   Checks if the locations array is correctly populated.
-    void test_set_locations();
+    // test_range_query_with_matches()
+    //   Verifies that SNARF can be initialized correctly with a non-empty set
+    //   of sorted input keys.
+    void test_range_query_with_matches();
 
-    // test_build_bit_blocks()
-    //   Verifies that blocks are correctly constructed and partitioned.
-    void test_build_bit_blocks();
+    // test_range_query_with_no_matches()
+    //   Verify that the range_query function correctly identifies when keys
+    //   within a specified range is absent.
+    void test_range_query_with_no_matches();
 
-    // test_create_gcs_block()
-    //   Checks the encoding of a simple batch into a Golomb-coded sequence.
-    void test_create_gcs_block();
-
-    // test_range_query()
-    //   Checks it correctly identifies the presence (or absence) of keys within
-    //   a specified range.
-    void test_range_query();
-
-    // test_query_block()
-    //   Verifies it can identify the presence of a key within a block.
-    void test_query_block();
+    // test_size_bytes()
+    //   Verify that the range_query function correctly identifies when keys
+    //   within a specified range is present.
+    void test_size_bytes();
 
     // run_snarf_tests()
     //   Helper function to run all tests in this struct.

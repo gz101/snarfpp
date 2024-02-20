@@ -260,7 +260,7 @@ struct SNARF {
             it != this->_bit_set_array.end();
             ++it
         ) {
-            size += this->_bit_set_array[i].size_bytes();
+            size += it->size_bytes();
         }
 
         return size;
