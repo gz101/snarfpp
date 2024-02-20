@@ -38,7 +38,9 @@ struct BitArray {
     void write_bits(size_t offset, size_t value, size_t num_bits) {
         for (size_t i = 0; i < num_bits; ++i) {
             // Set the value in the bit array to value[i].
-            this->_bit_array[offset + i] = (value >> i) & 1;
+            if (value >> i & 1) {
+                this->_bit_array.set(offset + i);
+            }
         }
     }
 
@@ -49,7 +51,7 @@ struct BitArray {
         size_t read = 0;
         for (size_t i = 0; i < num_bits; ++i) {
             // Set read[i] to the (offset + i)-th position in the bit array.
-            if (this->_bit_array[offset + i]) {
+            if (this->_bit_array.test(offset + i)) {
                 read |= (1ULL << i);
             }
         }

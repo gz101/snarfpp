@@ -230,9 +230,39 @@ struct SNARF {
         return false;   // no key values found within range.
     }
 
-    // size()
+    // size_bytes()
     //   Returns the total size of the SNARF instance.
-    size_t size() {
-        return 16;
+    size_t size_bytes() {
+        size_t size = 0;
+
+        // Add model size.
+        size += this->_model.size_bytes();
+
+        // Add member variable sizes.
+        size += sizeof(this->_bit_size);
+        size += sizeof(this->_block_size);
+        size += sizeof(this->_golomb_param);
+        size += sizeof(this->_total_keys);
+        size += sizeof(this->_total_blocks);
+
+        // Add size of key counts.
+        for (
+            auto it = this->_keys_per_block.begin();
+            it != this->_keys_per_block.end();
+            ++it
+        ) {
+            size += sizeof(*it);
+        }
+
+        // Add size of each bitset.
+        for (
+            auto it = this->_bit_set_array.begin();
+            it != this->_bit_set_array.end();
+            ++it
+        ) {
+            size += this->_bit_set_array[i].size_bytes();
+        }
+
+        return size;
     }
 };

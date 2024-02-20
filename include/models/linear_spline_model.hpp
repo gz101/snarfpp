@@ -68,7 +68,7 @@ struct LinearSplineModel : BaseSplineModel<Key> {
 
     // size()
     //   Returns the size of the linear model in bytes.
-    size_t size_bytes() {
+    size_t size_bytes() override {
         size_t model_size = 0;
 
         // Size contribution of base model.
