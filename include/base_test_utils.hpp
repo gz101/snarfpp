@@ -191,6 +191,10 @@ struct TestSNARF {
     //   internal state.
     void test_constructor();
 
+    // test_constructor_failure_low_R()
+    //   Tests the SNARF constructor checks if the bits per key is too low.
+    void test_constructor_failure_low_bits_per_key();
+
     // test_range_query_with_matches()
     //   Verifies that SNARF can be initialized correctly with a non-empty set
     //   of sorted input keys.

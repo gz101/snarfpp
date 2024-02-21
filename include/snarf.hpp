@@ -3,28 +3,27 @@
  * See LICENSE in the directory root for terms of use.
  */
 
-#include <algorithm>
 #include "models/linear_spline_model.hpp"
 #include "bit_array.hpp"
 
 
 template <typename Key>
 struct SNARF {
-    // Predictive model that can be varied.
+    // Underlying predictive model.
     LinearSplineModel<Key> _model;
-    // An array of bit sets used to store the underlying data.
-    std::vector<BitArray> _bit_set_array;
-    // Specifies the number of keys in each block.
+    // Vector of bitsets used to store the underlying location index data.
+    std::vector<BitArray> _bitsets;
+    // Vector storing the number of keys in each bitset block.
     std::vector<size_t> _keys_per_block;
     // The total number of input keys.
-    size_t _total_keys;
-    // Golomb parameter calculated based on the desired number of keys per bit.
-    size_t _golomb_param;
-    // The specified input number of elements per block.
+    size_t _num_keys;
+    // The scaling factor used to determine the false positive rate.
+    size_t _scaling_factor;
+    // The number of elements in each block.
     size_t _block_size;
-    // The number of bits required for GCS remainder.
-    size_t _bit_size;
-    // The total number of blocks needed to store all keys.
+    // The size of each bitset in bits.
+    size_t _bitset_size;
+    // The total number of blocks.
     size_t _total_blocks;
 
     // SNARF(input_Keys, bits_per_key, elements_per_block)
@@ -33,32 +32,28 @@ struct SNARF {
     SNARF(
         const std::vector<Key>& input_keys,
         double bits_per_key,
-        size_t elements_per_block,
+        size_t block_size,
         size_t R
-    ) : _model(input_keys, R),
-        _total_keys(input_keys.size()),
-        _block_size(elements_per_block)
+    ) :
+        _model(input_keys, R),
+        _num_keys(input_keys.size()),
+        _block_size(block_size)
     {
-        // Set parameters for SNARF.
-        _set_golomb_parameters(bits_per_key);
-        this->_total_blocks = ceil(this->_total_keys * 1.0 / this->_block_size);
-        this->_bit_set_array.resize(this->_total_blocks);
+        // Check if more than 3 bits per key.
+        if (bits_per_key <= 3) {
+            throw std::runtime_error("ERROR: Requires >3 bits per key.");
+        }
 
-        // Determine the locations for each key using predictive model.
+        // Initialize parameters for SNARF.
+        double target_FPR = pow(0.5, bits_per_key - 3.0);
+        this->_scaling_factor = pow(2, ceil(log2(1.0 / target_FPR)));
+        this->_bitset_size = ceil(log2(1.0 / target_FPR));
+        this->_total_blocks = ceil(_num_keys * 1.0 / this->_block_size);
+
+        // Build Golomb compressed bit array of key locations.
         std::vector<size_t> locations;
         _set_locations(input_keys, locations);
-
-        // Create Golomb-coded blocks for the determined locations.
-        _build_bit_blocks(locations);
-    }
-
-    // _set_golomb_parameters(bits_per_key)
-    //   Sets the Golomb coding parameters based on the desired average bits
-    //   per key.
-    void _set_golomb_parameters(double bits_per_key) {
-        double target_FPR = pow(0.5, bits_per_key - 3.0);
-        this->_golomb_param = pow(2, ceil(log2(1.0 / target_FPR)));
-        this->_bit_size = ceil(log2(1.0 / target_FPR));
+        _build_blocks(locations);
     }
 
     // _set_locations(input_keys, locations)
@@ -67,167 +62,194 @@ struct SNARF {
     void _set_locations(
         const std::vector<Key>& input_keys, std::vector<size_t>& locations
     ) {
-        for (const Key& key : input_keys) {
+        locations.clear();
+        locations.reserve(this->_num_keys);
+
+        // Collect the predicted location of every input key.
+        for (const auto& key : input_keys) {
             double cdf = this->_model.predict(key);
 
-            // Scale to size of the un-compressed bit array.
-            size_t location = floor(
-                cdf * this->_total_keys * this->_golomb_param
+            // Scale to the size of the uncompressed bit array.
+            size_t location = size_t(
+                floor(cdf * this->_num_keys * this->_scaling_factor)
             );
-            location = std::max(
-                size_t(0ULL),
-                std::min(
-                    location,
-                    size_t(this->_total_keys * this->_golomb_param - 1)
-                )
+            location = std::min(
+                std::max(location, size_t(0)),
+                size_t(this->_num_keys * this->_scaling_factor - 1)
             );
 
             locations.push_back(location);
         }
+    }
 
-        // If input keys are not in sorted order, use this.
-        // std::sort(locations.begin(), locations.end());
+    // _create_gcs_block(batch, block)
+    //   Encodes a batch of key locations into a GCS block within the input bit
+    //   array.
+    void _create_gcs_block(const std::vector<size_t>& batch, BitArray& block) {
+        // Initialize bit block with sufficient size for everything in batch.
+        block = BitArray(
+            (this->_bitset_size + 1) * batch.size() + this->_block_size
+        );
+
+        size_t offset = 0;
+
+        // Write the binary codes for each key continuously.
+        for (auto location : batch) {
+            block.write_bits(
+                offset, location % this->_scaling_factor, this->_bitset_size
+            );
+            offset += this->_bitset_size;
+        }
+
+        // Write the unary codes for each key continuously.
+        size_t delta_zero = 0;
+        for (size_t location : batch) {
+            size_t unary_part = location / this->_scaling_factor;
+
+            // Write the zeros.
+            while (delta_zero < unary_part) {
+                block.write_bits(offset++, 0, 1);
+                ++delta_zero;
+            }
+
+            // Write the terminating one for the unary code.
+            block.write_bits(offset++, 1, 1);
+        }
     }
 
     // _build_bit_blocks(locations)
     //   Constructs Golomb-coded bit blocks from sorted locations of input keys.
-    void _build_bit_blocks(const std::vector<size_t>& locations) {
-        std::vector<size_t> current_batch;  // locations for current block
+    void _build_blocks(const std::vector<size_t>& locations) {
+        std::vector<size_t> batch;  // locations for current block
+        size_t batch_count = ceil(locations.size() * 1.0 / this->_block_size);
+
+        // Initialize bitset array and key count vectors.
+        size_t index = 0;
+        this->_bitsets.resize(this->_total_blocks);
+        this->_keys_per_block.resize(batch_count, 0);
 
         // Fill each block with keys based on their locations
-        for (size_t i = 0, start = 0; i < this->_total_blocks; ++i) {
-            current_batch.clear();
-
-            size_t lo = i * this->_block_size * this->_golomb_param;
-            size_t hi = (i + 1) * this->_block_size * this->_golomb_param;
+        for (size_t i = 0; i < batch_count; ++i) {
+            batch.resize(0);
+            size_t lower_bound = i * this->_block_size * this->_scaling_factor;
+            size_t upper_bound = (i + 1) * this->_block_size
+                * this->_scaling_factor;
 
             // Collect locations that fall within the current block's range.
-            for (; start < locations.size() && locations[start] < hi; ++start) {
-                if (locations[start] >= lo) {
-                    // Adjust location relative to start of the block.
-                    current_batch.push_back(locations[start] - lo);
-                }
+            while (
+                index < locations.size() &&
+                lower_bound <= locations[index] &&
+                locations[index] < upper_bound
+            ) {
+                // Adjust location relative to start of the block.
+                batch.push_back(locations[index++] - lower_bound);
             }
 
             // Create Golomb-coded bit block for the current batch of locations.
-            _create_gcs_block(current_batch, this->_bit_set_array[i]);
+            _create_gcs_block(batch, this->_bitsets[i]);
             // Record the number of keys encoded in the current block.
-            this->_keys_per_block.push_back(current_batch.size());
+            this->_keys_per_block[i] = batch.size();
         }
     }
 
-    // _create_gcs_block(current_batch, bit_set)
-    //   Encodes a batch of keys into a GCS block within the input bit array.
-    void _create_gcs_block(
-        const std::vector<size_t>& current_batch, BitArray& bit_set
+    // _query_block(lower_location, upper_location, bitset, num_keys_read)
+    //   Checks if a specific block contains any key within the specified range
+    //   [lower_location, upper_location].
+    bool _range_query_in_block(
+        size_t lower_location,
+        size_t upper_location,
+        BitArray& bitset,
+        size_t num_keys_read
     ) {
-        // Initialize bit block with sufficient size for everything in batch.
-        bit_set = BitArray(
-            (this->_bit_size + 1) * current_batch.size() + this->_block_size
-        );
+        size_t offset_binary = 0;
+        size_t offset_unary = num_keys_read * this->_bitset_size;
 
-        size_t offset = 0;
+        // Iterate over every key (at most num_keys_read) in the block.
+        for (size_t i = 0; i < num_keys_read; ++i) {
+            // Read binary part for remainder.
+            size_t binary_part = bitset.read_bits(
+                offset_binary, this->_bitset_size
+            );
+            offset_binary += this->_bitset_size;
 
-        // Iterate over every key location in current batch for encoding.
-        for (auto value : current_batch) {
-            size_t quotient = value / this->_golomb_param;
-            size_t remainder = value % this->_golomb_param;
-
-            // Write unary code for quotient.
-            for (size_t j = 0; j < quotient; ++j) {
-                bit_set.write_bits(offset++, 0, 1);
+            // Read unary part for quotient.
+            size_t unary_part = 0;
+            while (bitset.read_bit(offset_unary++) == 0) {
+                ++unary_part;
             }
-            bit_set.write_bits(offset++, 1, 1); // delimiter
 
-            // Write binary code for remainder.
-            bit_set.write_bits(offset, remainder, this->_bit_size);
-            offset += this->_bit_size;
+            // Reconstruct the original location.
+            size_t value = unary_part * this->_scaling_factor + binary_part;
+
+            // Check if reconstructed value lies between the location ranges.
+            if (value >= lower_location && value <= upper_location) {
+                return true;
+            }
         }
+
+        return false;   // no key locations found within this range
     }
 
-    // range_query(lo, hi)
+    // range_query(lower, upper)
     //   Performs a range query to check if any key within the specified range
-    //   [lo, hi] exists.
-    bool range_query(Key lo, Key hi) {
-        // Obtain array positions for the high and low ranges of the query.
-        double cdf_lo = this->_model.predict(lo);
-        double cdf_hi = this->_model.predict(hi);
-        size_t lo_pos = floor(cdf_lo * this->_total_keys * this->_golomb_param);
-        size_t hi_pos = floor(cdf_hi * this->_total_keys * this->_golomb_param);
+    //   [lower, upper] exists.
+    bool range_query(const Key& lower, const Key& upper) {
+        // Calculate the approximate locations for the query range.
+        double lower_cdf = this->_model.predict(lower);
+        double upper_cdf = this->_model.predict(upper);
 
-        // Determine the block indices where the lower and upper positions are.
-        size_t lo_block_index = lo_pos / (
-            this->_block_size * this->_golomb_param
+        size_t lower_location = floor(
+            lower_cdf * this->_num_keys * this->_scaling_factor
         );
-        size_t hi_block_index = hi_pos / (
-            this->_block_size * this->_golomb_param
+        size_t upper_location = floor(
+            upper_cdf * this->_num_keys * this->_scaling_factor
         );
 
-        // Iterate over each block that could contain the query range.
+        // Ensure the locations are within bounds.
+        lower_location = std::min(
+            std::max(lower_location, size_t(0)),
+            this->_num_keys * this->_scaling_factor - 1
+        );
+        upper_location = std::min(
+            std::max(upper_location, size_t(0)),
+            this->_num_keys * this->_scaling_factor - 1
+        );
+
+        // Determine block indices for the lower and upper query locations.
+        size_t lower_block_index = lower_location / (
+            this->_block_size * this->_scaling_factor
+        );
+        size_t upper_block_index = upper_location / (
+            this->_block_size * this->_scaling_factor
+        );
+
+        // If the query range spans multiple blocks, check each relevant block.
         for (
-            size_t i = lo_block_index;
-            i <= hi_block_index && i < this->_total_blocks;
-            ++i
+            size_t block_index = lower_block_index;
+            block_index <= upper_block_index;
+            ++block_index
         ) {
-            // Start of current block in the GCS.
-            size_t block_start = i * this->_block_size * this->_golomb_param;
+            size_t block_lower_value = (block_index == lower_block_index)
+                ? lower_location % (this->_block_size * this->_scaling_factor)
+                : 0;
+            size_t block_upper_value = (block_index == upper_block_index)
+                ? upper_location % (this->_block_size * this->_scaling_factor)
+                : this->_block_size * this->_scaling_factor - 1;
 
-            // Adjust lower and higher positions relative to the start of the
-            // current block.
-            size_t relative_lo_pos = lo_pos > block_start
-                ? lo_pos - block_start : 0;
-            size_t relative_hi_pos =
-                hi_pos < (block_start + this->_block_size * this->_golomb_param)
-                ? hi_pos - block_start
-                : this->_block_size * this->_golomb_param - 1;
-
-            // Check if current block contains any key within the query range.
+            // Adjust block query range to be relative to the current block.
             if (
-                _query_block(
-                    this->_bit_set_array[i],
-                    relative_lo_pos,
-                    relative_hi_pos,
-                    this->_keys_per_block[i]
+                _range_query_in_block(
+                    block_lower_value,
+                    block_upper_value,
+                    this->_bitsets[block_index],
+                    this->_keys_per_block[block_index]
                 )
             ) {
-                return true;
+                return true;    // found matching value within range
             }
         }
 
-        return false;   // no key found in the range
-    }
-
-    // _query_block(bit_set, lo, hi, num_keys_read)
-    //   Checks if a specific block contains any key within the specified range
-    //   [lo, hi].
-    bool _query_block(BitArray& bit_set, Key lo, Key hi, size_t num_keys_read) {
-        size_t offset = 0;
-
-        // Reconstruct every key in block until the value is found.
-        for (size_t i = 0; i < num_keys_read; ++i) {
-            size_t quotient = 0;
-
-            // Reading unary part for quotient.
-            while (!bit_set.read_bit(offset)) {
-                ++quotient;
-                ++offset;
-            }
-            ++offset;   // skip the delimiter '1' bit at end of unary code
-
-            // Reading binary part for remainder.
-            size_t remainder = bit_set.read_bits(offset, this->_bit_size);
-            offset += this->_bit_size;
-
-            // Reconstruct value.
-            Key value = quotient * this->_golomb_param + remainder;
-
-            // Check if reconstructed key value falls within query range.
-            if (value >= lo && value <= hi) {
-                return true;
-            }
-        }
-
-        return false;   // no key values found within range.
+        return false;   // no matching key found within range
     }
 
     // size_bytes()
@@ -239,10 +261,10 @@ struct SNARF {
         size += this->_model.size_bytes();
 
         // Add member variable sizes.
-        size += sizeof(this->_bit_size);
+        size += sizeof(this->_num_keys);
+        size += sizeof(this->_scaling_factor);
         size += sizeof(this->_block_size);
-        size += sizeof(this->_golomb_param);
-        size += sizeof(this->_total_keys);
+        size += sizeof(this->_bitset_size);
         size += sizeof(this->_total_blocks);
 
         // Add size of key counts.
@@ -256,9 +278,7 @@ struct SNARF {
 
         // Add size of each bitset.
         for (
-            auto it = this->_bit_set_array.begin();
-            it != this->_bit_set_array.end();
-            ++it
+            auto it = this->_bitsets.begin(); it != this->_bitsets.end(); ++it
         ) {
             size += it->size_bytes();
         }

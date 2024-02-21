@@ -24,9 +24,9 @@ int main() {
     // SNARF CONSTRUCTION
     //----------------------------------------
 
-    const double bits_per_key = 10.00;
-    const int batch_size = 100;
-    const size_t R = 1000;
+    const double bits_per_key = 10.0;
+    const size_t batch_size = 100;
+    const size_t R = 10000;
 
     SNARF<std::uint64_t> snarf_instance = SNARF<std::uint64_t>(
         v_keys, bits_per_key, batch_size, R
