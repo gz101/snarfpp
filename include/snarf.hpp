@@ -163,28 +163,32 @@ struct SNARF {
     ) {
         size_t offset_binary = 0;
         size_t offset_unary = num_keys_read * this->_bitset_size;
+        size_t delta_zero = 0;
 
         // Iterate over every key (at most num_keys_read) in the block.
         for (size_t i = 0; i < num_keys_read; ++i) {
-            // Read binary part for remainder.
-            size_t binary_part = bitset.read_bits(
-                offset_binary, this->_bitset_size
-            );
-            offset_binary += this->_bitset_size;
+            // Get the unary bit.
+            size_t unary_part = bitset.read_bit(offset_unary++);
 
-            // Read unary part for quotient.
-            size_t unary_part = 0;
-            while (bitset.read_bit(offset_unary++) == 0) {
-                ++unary_part;
+            // Check if at the end of the unary bit for key (i.e. == 1).
+            if (
+                unary_part &&
+                ((delta_zero + 1) * this->_scaling_factor >= lower_location) &&
+                (upper_location >= delta_zero * this->_scaling_factor)
+            ) {
+                // Reconstruct the original location value.
+                size_t value = delta_zero * this->_scaling_factor
+                    + bitset.read_bits(offset_binary, this->_bitset_size);
+
+                // Check if the location is between the range query.
+                if (value >= lower_location && value <= upper_location) {
+                    return true;
+                }
             }
 
-            // Reconstruct the original location.
-            size_t value = unary_part * this->_scaling_factor + binary_part;
-
-            // Check if reconstructed value lies between the location ranges.
-            if (value >= lower_location && value <= upper_location) {
-                return true;
-            }
+            delta_zero += (1 - unary_part); // update number of '0's seen.
+            i -= (1 - unary_part);  // determine if need to loop to next '0'.
+            offset_binary += (unary_part * this->_bitset_size);
         }
 
         return false;   // no key locations found within this range

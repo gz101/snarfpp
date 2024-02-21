@@ -209,7 +209,7 @@ struct snarf_gcs
     int num_keys=num_keys_read; // number of keys to look for in this block
     int delta_zero_count=0,delta_one_count=0;
     // offset_dense_itr used for reading unary codes, offset_sparse_itr used for reading binary codes
-    int offset_dense_itr=num_keys*bit_size,offset_sparse_itr=0;
+    int offset_dense_itr=num_keys*bit_size, offset_sparse_itr=0;
 
     int bit_val;    // used to store the unary bit value
     uint64_t temp;  // used to hold the re-constructed value of the location

@@ -3,7 +3,7 @@
 ## Project Title: A Study in Kernel Functions for Sparse Numerical Array-Based Range Filters
 
 ### Introduction
-This repository contains the implementation code for "A Study in Kernel Functions for Sparse Numerical Array-Based Range Filters," a project focused on enhancing the Sparse Numerical Array-Based Range Filters (SNARF) data structure by exploring the integration of various non-linear kernel functions. Our aim is to investigate if non-linear models can provide improved performance, accuracy, and space efficiency over the linear model currently used in SNARF.
+This repository contains the implementation code for "A Study in Kernel Functions for Sparse Numerical Array-Based Range Filters", a project focused on enhancing the Sparse Numerical Array-Based Range Filters (SNARF) data structure by exploring the integration of various non-linear kernel functions. Our aim is to investigate if non-linear models can provide improved performance, accuracy, and space efficiency over the linear model currently used in SNARF.
 
 ### Research Problem and Aims
 The project addresses the limitations of the linear spline model in SNARF, proposing the use of different non-linear kernel functions (quadratic, cubic, logarithmic, and exponential) to potentially reduce the model size and achieve comparable error rates with greater efficiency.
@@ -55,7 +55,7 @@ docker run -v $(pwd):/usr/src/snarfpp snarfpp tests
 This work contributes to the field of learned index structures by providing insights into the potential benefits of integrating non-linear kernel functions into SNARF, offering a more adaptable and efficient solution for range filtering tasks.
 
 ### Acknowledgements
-We acknowledge the foundational work on SNARF and the learned index structures that inspired this research. Special thanks to the authors of the original SNARF paper for their invaluable contributions to the domain.
+We acknowledge the foundational work on SNARF and the learned index structures that inspired this research. Special thanks to the authors of the [original SNARF paper](https://www.vldb.org/pvldb/vol15/p1632-vaidya.pdf) and the [original source code](https://github.com/kapilvaidya24/SNARF) for their invaluable contributions to the domain.
 
 ### License
 This project is licensed under the MIT License - see the LICENSE file for details.

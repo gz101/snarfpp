@@ -40,31 +40,50 @@ int main() {
     // QUERYING SNARF
     //----------------------------------------
 
-    auto perform_query = [&](
-        std::uint64_t left_end,
-        std::uint64_t right_end,
-        const std::string& expectation
-    ) {
-        if (snarf_instance.range_query(left_end, right_end)) {
-            std::cout << "False Positive for: [ " << left_end << ", "
-                << right_end << "]" << std::endl;
-        } else {
-            std::cout << expectation << " for: [ " << left_end << ", "
-                << right_end << "]" << std::endl;
-        }
-    };
+    // Start with left and right out of range.
+    std::uint64_t left = 15000;
+    std::uint64_t right = 16000;
 
-    std::uint64_t left_end = 15000, right_end = 16000;
-    perform_query(left_end, right_end, "True Positive");
+    // Should be false positive.
+    if (snarf_instance.range_query(left, right)) {
+        std::cout << "False Positive for [" << left << ", " << right << "]"
+            << std::endl;
+    } else {
+        std::cout << "True Negative for [" << left << ", " << right << "]"
+            << std::endl;
+    }
 
-    // snarf_instance.insert_key(15000);
-    // perform_query(left_end, right_end, "True Positive");
+    // Should be true positive.
+    right = 25000;
+    if (snarf_instance.range_query(left, right)) {
+        std::cout << "True Positive for [" << left << ", " << right << "]"
+            << std::endl;
+    } else {
+        std::cout << ":( False Negative for [" << left << ", " << right << "]"
+            << std::endl;
+    }
 
-    // snarf_instance.delete_key(15000);
-    // perform_query(left_end, right_end, "True Negative");
+    // Should be false positive.
+    left = 10001;
+    right = 16000;
+    if (snarf_instance.range_query(left, right)) {
+        std::cout << "False Positive for [" << left << ", " << right << "]"
+            << std::endl;
+    } else {
+        std::cout << "True Negative for [" << left << ", " << right << "]"
+            << std::endl;
+    }
 
-    std::uint64_t false_positive_left_end = 10001;
-    perform_query(false_positive_left_end, right_end, "True Negative");
+    // No false negatives. Should be true positive.
+    left = 10000;
+    right = 20000;
+    if (snarf_instance.range_query(left, right)) {
+        std::cout << "True Positive for [" << left << ", " << right << "]"
+            << std::endl;
+    } else {
+        std::cout << ":( False Negative for [" << left << ", " << right << "]"
+            << std::endl;
+    }
 
     return 0;
 }
