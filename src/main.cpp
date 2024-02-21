@@ -4,6 +4,7 @@
  */
 
 
+// Used for SNARF as command line program.
 int main() {
     return 0;
 }

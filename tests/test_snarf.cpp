@@ -29,7 +29,7 @@ void TestSNARF::test_constructor_failure_low_bits_per_key() {
         SNARF<int> snarf(input_keys, bits_per_key, 2, 1);
         assert(false);  // if it reaches here, the test should fail
     } catch (const std::runtime_error& e) {
-        assert(true);   // expected path: exception thrown due to invalid R
+        assert(true);   // expected path: exception thrown due low bits per key
     } catch (...) {
         assert(false);  // unexpected exception type
     }
