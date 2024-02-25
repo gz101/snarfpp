@@ -216,6 +216,9 @@ struct TestSNARF {
 };
 
 
+// assert_double_equals(x, y)
+//   Helper function to compare if two arbitrary precision values are equal
+//   within a certain tolerance.
 inline void assert_double_equals(double x, double y) {
     assert(fabs(x - y) < EPS);
 }
