@@ -19,8 +19,8 @@
 
 
 // assert_double_equals(x, y)
-//   Asserts that x and y are within EPS of each other to handle floating point
-//   comparisons.
+//   Helper function to compare if two arbitrary precision values are equal
+//   within a certain tolerance.
 void assert_double_equals(double x, double y);
 
 
@@ -216,9 +216,6 @@ struct TestSNARF {
 };
 
 
-// assert_double_equals(x, y)
-//   Helper function to compare if two arbitrary precision values are equal
-//   within a certain tolerance.
 inline void assert_double_equals(double x, double y) {
     assert(fabs(x - y) < EPS);
 }
