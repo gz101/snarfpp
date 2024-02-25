@@ -14,7 +14,7 @@ struct SNARF {
     // Vector of bitsets used to store the underlying location index data.
     std::vector<BitArray> _bitsets;
     // Vector storing the number of keys in each bitset block.
-    std::vector<size_t> _keys_per_block;
+    std::vector<uint32_t> _keys_per_block;
     // The total number of input keys.
     size_t _num_keys;
     // The scaling factor used to determine the false positive rate.
@@ -148,7 +148,7 @@ struct SNARF {
             // Create Golomb-coded bit block for the current batch of locations.
             _create_gcs_block(batch, this->_bitsets[i]);
             // Record the number of keys encoded in the current block.
-            this->_keys_per_block[i] = batch.size();
+            this->_keys_per_block[i] = static_cast<uint32_t>(batch.size());
         }
     }
 

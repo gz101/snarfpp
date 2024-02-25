@@ -44,7 +44,7 @@ int main() {
     std::uint64_t left = 15000;
     std::uint64_t right = 16000;
 
-    // Should be false positive.
+    // Should be true negative.
     if (snarf_instance.range_query(left, right)) {
         std::cout << "False Positive for [" << left << ", " << right << "]"
             << std::endl;
