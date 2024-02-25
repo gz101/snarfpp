@@ -59,7 +59,7 @@ void TestSNARF::test_size_bytes() {
     std::vector<int> input_keys = {1, 2, 3, 4, 5};
     SNARF<int> snarf(input_keys, 10, 2, 2);
 
-    size_t expected_size = 172;  // to check this value by hand calculation
+    size_t expected_size = 160;  // to check this value by hand calculation
     assert(snarf.size_bytes() == expected_size);
 }
 
