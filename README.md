@@ -12,7 +12,8 @@ The project addresses the limitations of the linear spline model in SNARF, propo
 3. Conduct comprehensive performance comparisons with existing data structures (Cuckoo Filter, SuRF, Rosetta) using real-world and synthetic datasets.
 
 ## Implementation Details
-- Language: C++11 (GNU GCC 13.2.0), Python 3.11 for simulations and benchmarking.
+- For C++ setup, refer to [Makefile](./Makefile) and [Dockerfile](./Dockerfile) for details. 
+- Python 3.11 for simulations and benchmarking.
 - Environment: Tested on Apple Mac Sonoma 14.2.1 with M1 chip, using single-thread execution.
 
 ## Repository Structure
@@ -56,7 +57,7 @@ This work contributes to the field of learned index structures by providing insi
 We acknowledge the foundational work on SNARF and the learned index structures that inspired this research. Special thanks to the authors of the [original SNARF paper](https://www.vldb.org/pvldb/vol15/p1632-vaidya.pdf) and the [original source code](https://github.com/kapilvaidya24/SNARF) for their invaluable contributions to the domain.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](./LICENSE).
 
 ## Contact
-For any inquiries or contributions, please open an issue in this repository.
+For any inquiries or contributions, please open an issue in this repository or contact me via any of my [listed socials](https://github.com/gz101).
