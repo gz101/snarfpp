@@ -14,6 +14,3 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set the entry point script to run on container start
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-# By default, run 'make all', but this can be overridden
-CMD ["all"]

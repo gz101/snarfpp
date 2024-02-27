@@ -35,19 +35,19 @@ The project is dockerized, so the following commands will need to be run in orde
 Build the container:
 
 ```sh
-docker build -t snarf .
+docker build -t snarfpp .
 ```
 
 Run the app with a `make` command:
 
 ```sh
-docker run -v $(pwd):/usr/src/snarfpp snarfpp <make_command>
+docker run --name snarfpp_container -v $(pwd):/usr/src/snarfpp snarfpp <make_command>
 ```
 
 For example, to run tests, use the following command:
 
 ```sh
-docker run -v $(pwd):/usr/src/snarfpp snarfpp tests
+docker run --name snarfpp_container -v $(pwd):/usr/src/snarfpp snarfpp tests
 ```
 
 ## Contributions
