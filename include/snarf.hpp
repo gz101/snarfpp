@@ -289,4 +289,21 @@ struct SNARF {
 
         return size;
     }
+
+    // print_snarf()
+    //   Prints the SNARF model parameters in human-readable format for
+    //   debugging purposes.
+    void print_snarf() {
+        std::cout << "--------------------\n";
+        std::cout << "SNARF MODEL PARAMETERS\n";
+        std::cout << "Total number of input keys: " << this->_num_keys << "\n";
+        std::cout << "Scaling factor: " << this->_scaling_factor << "\n";
+        std::cout << "Number of elements in a block: " << this->_block_size
+            << "\n";
+        std::cout << "Size of each bitset (bits): " << this->_bitset_size
+            << "\n";
+        std::cout << "Total number of blocks: " << this->_total_blocks
+            << "\n";
+        std::cout << "\n--------------------\n";
+    }
 };

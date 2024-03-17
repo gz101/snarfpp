@@ -7,7 +7,8 @@ if ! ([ "$1" = "tests" ] || [ "$1" = "all" ] || [ "$1" = "examples" ]); then
 fi
 
 # execute unit tests
-docker run --name snarfpp_container -v $(pwd):/usr/src/snarfpp snarfpp $1
+docker run --name snarfpp_container -v $(pwd):/usr/src/snarfpp -u $(id -u):\
+$(id -g) snarfpp $1
 
 # clean up container and files
 make clean
