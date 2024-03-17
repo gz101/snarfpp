@@ -14,7 +14,7 @@ The project addresses the limitations of the linear spline model in SNARF, propo
 ## Implementation Details
 - For C++ setup, refer to [Makefile](./Makefile) and [Dockerfile](./Dockerfile) for details. 
 - Python 3.11 for simulations and benchmarking.
-- Environment: Tested on Apple Mac Sonoma 14.2.1 with M1 chip, using single-thread execution.
+- Environment: Tested on Ubuntu 22.04 LTS with an Intel i9-13900KS processor and 32GB of RAM.
 
 ## Repository Structure
 - `/include`: Header files for the modified SNARF implementation.
@@ -48,6 +48,12 @@ For example, to run tests, use the following command:
 
 ```sh
 docker run --name snarfpp_container -v $(pwd):/usr/src/snarfpp snarfpp tests
+```
+
+Alternatively, you can use the `run_docker.sh` script to run the app with the same commands, but includes cleanup tasks. An argument of either `tests`, `examples`, or `all` must be supplied.
+
+```sh
+./run_docker.sh <make_command>
 ```
 
 ## Contributions
